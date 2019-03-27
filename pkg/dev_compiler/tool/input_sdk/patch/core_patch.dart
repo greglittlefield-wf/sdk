@@ -36,6 +36,8 @@ int identityHashCode(Object object) {
   // for them to be equivalent to their computed hashCode function.
   int hash = JS('int|Null', r'#[#]', object, dart.identityHashCode_);
   if (hash == null) {
+    // Can't store the identity hashCode on frozen objects. TODO: use WeakMap?
+    if (JS('bool', r'Object.isFrozen(#)', object)) return 0;
     hash = JS('int', '(Math.random() * 0x3fffffff) | 0');
     JS('void', r'#[#] = #', object, dart.identityHashCode_, hash);
   }
